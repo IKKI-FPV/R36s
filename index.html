@@ -3,229 +3,975 @@
 <head>
     <meta charset="UTF-8">
     <title>Guida Definitiva R36S</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bg-body: #050816;
+            --bg-card: rgba(15, 23, 42, 0.92);
+            --bg-card-soft: rgba(15, 23, 42, 0.75);
+            --accent: #38bdf8;
+            --accent-soft: rgba(56, 189, 248, 0.18);
+            --accent-strong: #0ea5e9;
+            --accent-red: #fb7185;
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --border-subtle: rgba(148, 163, 184, 0.35);
+            --shadow-soft: 0 24px 60px rgba(15, 23, 42, 0.65);
+            --radius-lg: 18px;
+            --radius-md: 999px;
+            --radius-pill: 999px;
+            --blur: 22px;
+            --transition-fast: 0.18s ease-out;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-body: #f3f4f6;
+                --bg-card: rgba(255, 255, 255, 0.96);
+                --bg-card-soft: rgba(255, 255, 255, 0.9);
+                --text-main: #111827;
+                --text-muted: #6b7280;
+                --border-subtle: rgba(209, 213, 219, 0.9);
+                --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.11);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 900px;
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.7;
+            color: var(--text-main);
+            background:
+                radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.18), transparent 55%),
+                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.12), transparent 55%),
+                var(--bg-body);
+            min-height: 100vh;
+            padding: 24px 16px 40px;
+        }
+
+        .page-shell {
+            max-width: 980px;
             margin: 0 auto;
-            padding: 20px;
+            position: relative;
         }
+
+        .page-shell::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            backdrop-filter: blur(32px);
+            z-index: -2;
+        }
+
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+
+        .page-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+            background-color: rgba(15, 23, 42, 0.7);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            width: fit-content;
+        }
+
+        .page-pill span.dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #22c55e 0%, #16a34a 50%, rgba(34, 197, 94, 0.35) 100%);
+            box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.22);
+        }
+
         h1 {
-            color: #E63946;
-            text-align: center;
-            border-bottom: 3px solid #1D3557;
-            padding-bottom: 10px;
+            font-size: clamp(2.1rem, 3.1vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin: 0;
+            color: #f9fafb;
         }
-        h2 {
-            color: #1D3557;
-            background: linear-gradient(90deg, #A8DADC 0%, rgba(168,218,220,0.2) 100%);
-            padding: 8px 15px;
-            border-left: 4px solid #457B9D;
-            margin-top: 30px;
+
+        .page-subtitle {
+            max-width: 560px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
         }
-        h3 {
-            color: #457B9D;
-            margin-top: 25px;
+
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            padding: 4px 10px;
+            border-radius: var(--radius-pill);
+            background-color: rgba(15, 23, 42, 0.8);
+            color: var(--text-muted);
+            border: 1px solid rgba(148, 163, 184, 0.6);
         }
+
+        .version-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #22c55e, #4ade80);
+        }
+
         a {
-            color: #1D3557;
+            color: var(--accent);
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
+            font-weight: 500;
+            transition: color var(--transition-fast), text-shadow var(--transition-fast), opacity var(--transition-fast);
         }
+
         a:hover {
-            color: #E63946;
-            text-decoration: underline;
+            color: var(--accent-strong);
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
         }
-        .note {
-            background-color: #F1FAEE;
-            border-left: 4px solid #A8DADC;
-            padding: 10px 15px;
-            margin: 15px 0;
-            border-radius: 0 4px 4px 0;
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.3fr);
+            gap: 18px;
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 860px) {
+            .layout-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 18px 18px 17px;
+            border: 1px solid rgba(148, 163, 184, 0.45);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 60%);
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #e5e7eb;
+        }
+
+        .card-eyebrow {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            margin-bottom: 2px;
+        }
+
+        .card-body {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+        }
+
+        .links-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .links-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .links-list li::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--accent);
+            opacity: 0.9;
+        }
+
+        .badge-soft {
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            color: var(--text-muted);
+        }
+
+        .badge-soft strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .note,
         .warning {
-            background-color: #FFE5E5;
-            border-left: 4px solid #E63946;
-            padding: 10px 15px;
-            margin: 15px 0;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
         }
-        .section {
-            background: #F8F9FA;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+
+        .note::before {
+            content: "💡";
+            margin-right: 6px;
         }
+
+        .warning {
+            border-color: rgba(248, 113, 113, 0.8);
+            color: #fecaca;
+            background: linear-gradient(135deg, rgba(127, 29, 29, 0.96), rgba(15, 23, 42, 0.95));
+        }
+
+        .warning::before {
+            content: "⚠️";
+            margin-right: 6px;
+        }
+
+        section {
+            margin-top: 4px;
+        }
+
+        h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin: 18px 2px 10px;
+            color: #e5e7eb;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::after {
+            content: "";
+            height: 1px;
+            width: 80px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            opacity: 0.8;
+        }
+
+        h3 {
+            font-size: 0.98rem;
+            margin: 14px 0 6px;
+            color: #e5e7eb;
+        }
+
+        ul {
+            margin: 6px 0 0;
+            padding-left: 18px;
+        }
+
+        li {
+            margin-bottom: 2px;
+        }
+
+        .section-card {
+            margin-top: 4px;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
         .button {
-            display: inline-block;
-            background: #1D3557;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), rgba(15, 23, 42, 0.96));
             color: white !important;
-            padding: 8px 15px;
-            border-radius: 4px;
-            margin: 5px 0;
-            font-weight: normal;
+            padding: 7px 13px;
+            border-radius: 999px;
+            font-size: 0.83rem;
+            font-weight: 500;
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+            white-space: nowrap;
         }
-        .compatibility-list {
-            columns: 2;
-            column-gap: 30px;
+
+        .button::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.22), transparent 55%);
+            opacity: 0;
+            transition: opacity var(--transition-fast);
         }
-        .key-combo {
-            font-family: monospace;
-            background: #E9ECEF;
-            padding: 2px 6px;
-            border-radius: 3px;
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 35px rgba(15, 23, 42, 0.8);
+            border-color: rgba(56, 189, 248, 0.95);
+        }
+
+        .button:hover::after {
+            opacity: 1;
+        }
+
+        .button span.icon {
+            font-size: 1rem;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 9px;
+            border-radius: var(--radius-pill);
+            background-color: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .tag::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        .specs-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px 18px;
+            font-size: 0.9rem;
+        }
+
+        .specs-list li {
+            margin: 0;
+        }
+
+        .spec-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .spec-value {
+            color: #f9fafb;
+            font-weight: 500;
+        }
+
+        .compatibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(0, min(260px, 100%)));
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        .compat-card {
+            background: var(--bg-card-soft);
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+
+        .compat-title {
+            font-size: 0.86rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .compat-title span.status {
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+            font-size: 0.7rem;
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            color: var(--text-muted);
+        }
+
+        .compat-title strong {
+            font-weight: 600;
+        }
+
+        .compat-list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .compat-ok .compat-title span.status {
+            border-color: rgba(34, 197, 94, 0.9);
+            color: #bbf7d0;
+        }
+
+        .compat-partial .compat-title span.status {
+            border-color: rgba(249, 115, 22, 0.9);
+            color: #fed7aa;
+        }
+
+        .key-combo-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.8rem;
+            color: #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .key-combo-chip small {
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .key-combo-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 8px 10px;
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0;
+            font-size: 0.9rem;
+        }
+
+        .key-combo-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .panel-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.5);
+        }
+
+        .panel-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+        }
+
+        .panel-name {
+            font-weight: 500;
+        }
+
+        .rom-group {
+            margin-top: 6px;
+        }
+
+        .rom-group h3 {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rom-group h3::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        .footer-space {
+            margin-top: 26px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .footer-space span {
+            color: var(--accent);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px 12px 32px;
+            }
+
+            .card {
+                padding: 14px 14px 13px;
+            }
+
+            .button {
+                max-width: 100%;
+                justify-content: flex-start;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>GUIDA DEFINITIVA PER LA CONSOLE R36S</h1>
-    
-    <div class="section">
-        <p><strong>Versione 1.20</strong></p>
-        <p>Dubbi, suggerimenti, domande o commenti: <a href="mailto:ikki007@libero.it">ikki007@libero.it</a></p>
-        <p>Documentazione, aggiornamenti, aggiunte, upload, traduzione e manutenzione a cura di <a href="https://t.me/ikkifpv" target="_blank">IKKI</a></p>
-        
-        <div class="note">
-            <p><strong>Riferimenti:</strong></p>
-            <ul>
-                <li><a href="https://1drv.ms/b/s!AiGazFXK2fBDk5l5n_7EKV8BMcrauQ" target="_blank">Documentazione originale di Ivo Senden</a></li>
-                <li><a href="https://docs.google.com/spreadsheets/d/1gWxtr-GmwWop-_qGUq022RXxK2aTLpPg9Qra68TQLI8/edit#gid=0" target="_blank">Compatibilità SD e Wi-Fi</a></li>
-                <li><a href="https://github.com/manster-zz/R36S-LINKS/wiki" target="_blank">Wiki R36S (Manzter-zz)</a></li>
-            </ul>
+<div class="page-shell">
+    <header class="page-header">
+        <div class="page-pill">
+            <span class="dot"></span>
+            Guida completa per ArkOS su R36S
         </div>
-    </div>
+        <div>
+            <h1>Guida definitiva per la console R36S</h1>
+            <p class="page-subtitle">
+                Tutto quello che ti serve per configurare, aggiornare e gestire in autonomia la tua R36S con ArkOS:
+                emulatori, BIOS, ROM, combinazioni di tasti e strumenti essenziali.
+            </p>
+        </div>
+        <div class="version-badge">
+            <span class="version-dot"></span>
+            <span><strong>Versione 1.20</strong> · Ultimo aggiornamento a cura di IKKI</span>
+        </div>
+    </header>
 
-    <h2>Introduzione</h2>
-    <p>Guida per utenti nuovi della console R36S e per chi desidera gestire la propria collezione di ROM. Copre configurazioni opzionali utili ma non obbligatorie.</p>
+    <main>
+        <div class="layout-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-eyebrow">Contatti &amp; manutenzione</div>
+                        <div class="card-title">Informazioni rapide</div>
+                    </div>
+                    <div class="badge-soft">
+                        Maintainer: <strong>IKKI</strong>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p>Dubbi, suggerimenti, domande o commenti: <a href="mailto:ikki007@libero.it">ikki007@libero.it</a></p>
+                    <p>Documentazione, aggiornamenti, aggiunte, upload, traduzione e manutenzione a cura di
+                        <a href="https://t.me/ikkifpv" target="_blank">IKKI</a>.
+                    </p>
 
-    <h2>Glossario di termini comuni</h2>
-    <div class="section">
-        <p><strong>ROM</strong>: File dei giochi (es. Tetris, Mario)</p>
-        <p><strong>CORE</strong>: Nucleo dell'emulatore (usato in Retroarch)</p>
-        <p><strong>BIOS</strong>: Software necessario per avviare emulatori</p>
-        <p><strong>CFW (Custom Firmware)</strong>: Sistema operativo modificato (es. ArkOS)</p>
+                    <div class="note">
+                        <strong>Riferimenti utili:</strong>
+                        <ul class="links-list">
+                            <li>
+                                <a href="https://1drv.ms/b/s!AiGazFXK2fBDk5l5n_7EKV8BMcrauQ" target="_blank">
+                                    Documentazione originale di Ivo Senden
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://docs.google.com/spreadsheets/d/1gWxtr-GmwWop-_qGUq022RXxK2aTLpPg9Qra68TQLI8/edit#gid=0"
+                                   target="_blank">
+                                    Compatibilità SD e Wi-Fi
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/manster-zz/R36S-LINKS/wiki" target="_blank">
+                                    Wiki R36S (Manzter-zz)
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-eyebrow">Per chi è questa guida</div>
+                        <div class="card-title">Introduzione</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p>
+                        Guida pensata sia per utenti nuovi della console R36S sia per chi desidera gestire con cura
+                        la propria collezione di ROM. Copre configurazioni opzionali utili ma non obbligatorie,
+                        concentrandosi sull’uso quotidiano con ArkOS.
+                    </p>
+
+                    <div class="tag">Livello consigliato: <strong>Principiante → Intermedio</strong></div>
+                </div>
+            </aside>
         </div>
 
-    <h2>Specifiche tecniche</h2>
-    <div class="section">
-        <ul>
-            <li><strong>Display</strong>: 3.5" IPS (640×480)</li>
-            <li><strong>CPU</strong>: RK3326</li>
-            <li><strong>RAM</strong>: 1GB DDR3L</li>
-            <li><strong>Batteria</strong>: 3200mAh</li>
-        </ul>
-    </div>
+        <section>
+            <h2>Glossario di termini comuni</h2>
+            <div class="card section-card">
+                <div class="card-body">
+                    <ul>
+                        <li><strong>ROM</strong>: File dei giochi (es. Tetris, Mario)</li>
+                        <li><strong>CORE</strong>: Nucleo dell'emulatore (usato in Retroarch)</li>
+                        <li><strong>BIOS</strong>: Software necessario per avviare emulatori</li>
+                        <li><strong>CFW (Custom Firmware)</strong>: Sistema operativo modificato (es. ArkOS)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
-    <h2>Emulatori compatibili</h2>
-    <div class="compatibility-list">
-        <h3>✅ Funzionano correttamente</h3>
-        <ul>
-            <li>Arcade (MAME, FBANEO)</li>
-            <li>PlayStation 1</li>
-            <li>Nintendo 64</li>
-            <li>Gameboy Advance</li>
-            </ul>
+        <section>
+            <h2>Specifiche tecniche</h2>
+            <div class="card section-card">
+                <div class="card-body">
+                    <div class="tag">Hardware R36S</div>
+                    <ul class="specs-list">
+                        <li>
+                            <span class="spec-label">Display</span>
+                            <span class="spec-value">3.5" IPS (640×480)</span>
+                        </li>
+                        <li>
+                            <span class="spec-label">CPU</span>
+                            <span class="spec-value">RK3326</span>
+                        </li>
+                        <li>
+                            <span class="spec-label">RAM</span>
+                            <span class="spec-value">1GB DDR3L</span>
+                        </li>
+                        <li>
+                            <span class="spec-label">Batteria</span>
+                            <span class="spec-value">3200mAh</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
-        <h3>⚠️ Funzionano parzialmente</h3>
-        <ul>
-            <li>Dreamcast</li>
-            <li>Super Nintendo</li>
-            <li>Sega Saturn</li>
-            </ul>
-    </div>
+        <section>
+            <h2>Emulatori compatibili</h2>
+            <div class="card section-card">
+                <div class="card-body">
+                    <div class="compatibility-grid">
+                        <div class="compat-card compat-ok">
+                            <div class="compat-title">
+                                <strong>✅ Funzionano correttamente</strong>
+                                <span class="status">Consigliati</span>
+                            </div>
+                            <ul class="compat-list">
+                                <li>Arcade (MAME, FBANEO)</li>
+                                <li>PlayStation 1</li>
+                                <li>Nintendo 64</li>
+                                <li>Gameboy Advance</li>
+                            </ul>
+                        </div>
+                        <div class="compat-card compat-partial">
+                            <div class="compat-title">
+                                <strong>⚠️ Funzionano parzialmente</strong>
+                                <span class="status">Performance variabile</span>
+                            </div>
+                            <ul class="compat-list">
+                                <li>Dreamcast</li>
+                                <li>Super Nintendo</li>
+                                <li>Sega Saturn</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <h2>Primi passi</h2>
-    <div class="section">
-        <h3>Strumenti necessari</h3>
-        <p>
-            <a class="button" href="https://terabox.com/s/1r31fTGsotEM5jn0VEYysNA" target="_blank">Scarica ImageUSB</a><br>
-            <a class="button" href="https://terabox.com/s/1ndOyAlJSXTQBcG5X_bo79g" target="_blank">Scarica Win32 Disk Imager</a><br>
-            <a class="button" href="https://terabox.com/s/12HvykN81hpYodWk3ZGffsw" target="_blank">Scarica SD Formatter</a>
-        </p>
+        <section>
+            <h2>Primi passi</h2>
+            <div class="card section-card">
+                <div class="card-body">
+                    <h3>Strumenti necessari</h3>
+                    <div class="button-row">
+                        <a class="button" href="https://terabox.com/s/1r31fTGsotEM5jn0VEYysNA" target="_blank">
+                            <span class="icon">💾</span> Scarica ImageUSB
+                        </a>
+                        <a class="button" href="https://terabox.com/s/1ndOyAlJSXTQBcG5X_bo79g" target="_blank">
+                            <span class="icon">💾</span> Scarica Win32 Disk Imager
+                        </a>
+                        <a class="button" href="https://terabox.com/s/12HvykN81hpYodWk3ZGffsw" target="_blank">
+                            <span class="icon">🧼</span> Scarica SD Formatter
+                        </a>
+                    </div>
 
-        <h3>Identificazione schermo</h3>
-        <p>
-            <a class="button" href="https://youtu.be/tMr3JzayYoM" target="_blank">Guida video</a>
-            <a class="button" href="https://aeolusux.github.io/ArkOS-R3XS/tools/dtbIdentify.htm" target="_blank">Strumento online</a>
-        </p>
+                    <h3>Identificazione schermo</h3>
+                    <p class="card-eyebrow">Panel / DTB</p>
+                    <div class="button-row">
+                        <a class="button" href="https://youtu.be/tMr3JzayYoM" target="_blank">
+                            <span class="icon">🎥</span> Guida video
+                        </a>
+                        <a class="button" href="https://aeolusux.github.io/ArkOS-R3XS/tools/dtbIdentify.htm" target="_blank">
+                            <span class="icon">🛠️</span> Strumento online
+                        </a>
+                    </div>
 
-        <h3>Aggiornamento sistema</h3>
-        <p>
-            <a class="button" href="https://www.mediafire.com/file/23cw6ij4bz474f3/ArkOS_R35S-R36S_v2.0_05242024_P4.img.xz/file" target="_blank">ArkOS 2.0 (05/2024)</a>
-            <a class="button" href="https://github.com/AeolusUX/R36S-DTB" target="_blank">File DTB</a>
-        </p>
-    </div>
+                    <h3>Aggiornamento sistema</h3>
+                    <div class="button-row">
+                        <a class="button"
+                           href="https://www.mediafire.com/file/23cw6ij4bz474f3/ArkOS_R35S-R36S_v2.0_05242024_P4.img.xz/file"
+                           target="_blank">
+                            <span class="icon">⬇️</span> ArkOS 2.0 (05/2024)
+                        </a>
+                        <a class="button" href="https://github.com/AeolusUX/R36S-DTB" target="_blank">
+                            <span class="icon">📦</span> File DTB
+                        </a>
+                    </div>
 
-    <h2>File BIOS</h2>
-    <div class="section">
-        <p>
-            <a class="button" href="https://archive.org/download/retro-arcade-v-04-rg-35-m-p/additional_sets/bios.7z" target="_blank">RetroArch BIOS Pack</a>
-            <a class="button" href="https://terabox.com/s/1D-gCam0HldBSrbAuWDnhsg" target="_blank">Pack BIOS personale</a>
-        </p>
-    </div>
+                    <div class="warning" style="margin-top:14px;">
+                        Prima di scrivere una nuova immagine su SD, effettua sempre un backup della SD originale
+                        fornita con la console.
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <h2>Combinazioni tasti utili</h2>
-    <div class="section">
-        <ul>
-            <li><span class="key-combo">R3 + D-Pad Su</span>: Aumenta luminosità</li>
-            <li><span class="key-combo">Fn + X</span>: Menu Retroarch</li>
-            <li><span class="key-combo">Fn + R1</span>: Salva partita</li>
-            <li><span class="key-combo">R3(tasto analogico sinistro) + Power</span>: Spegnimento sicuro</li>
-            <li><span class="key-combo">Fn + L1</span>: Carica partita</li>
-            <li><span class="key-combo">Fn + A</span>: Metti in pausa il gioco</li>
-            <li><span class="key-combo">Fn + B</span>: Riavvia il gioco</li>
-            <li><span class="key-combo">Fn + Start</span>: Esci dal gioco</li>
-        </ul>
-    </div>
+        <section>
+            <h2>File BIOS</h2>
+            <div class="card section-card">
+                <div class="card-body">
+                    <p>I BIOS sono indispensabili per molti emulatori. Assicurati di copiarli nelle cartelle corrette.</p>
+                    <div class="button-row">
+                        <a class="button"
+                           href="https://archive.org/download/retro-arcade-v-04-rg-35-m-p/additional_sets/bios.7z"
+                           target="_blank">
+                            <span class="icon">📁</span> RetroArch BIOS Pack
+                        </a>
+                        <a class="button" href="https://terabox.com/s/1D-gCam0HldBSrbAuWDnhsg" target="_blank">
+                            <span class="icon">🧩</span> Pack BIOS personale
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <h2>Modalità Selettore Pannello (Panel Picker Mode)</h2>
-    <div class="section">
-        <p>Per entrare nella <strong>Modalità Selettore Pannello</strong>, tieni premuta la corretta combinazione di tasti durante l'avvio della console.</p>
-        <p><strong>Tieni premuto l'Hotkey (<span class="key-combo">R1</span>) + uno dei seguenti pulsanti durante l'accensione:</strong></p>
-        <ul>
-            <li><span class="key-combo">R1 + SU</span>: Seleziona il <strong>Pannello 1</strong></li>
-            <li><span class="key-combo">R1 + DESTRA</span>: Seleziona il <strong>Pannello 2</strong></li>
-            <li><span class="key-combo">R1 + GIÙ</span>: Seleziona il <strong>Pannello 3</strong></li>
-            <li><span class="key-combo">R1 + SINISTRA</span>: Seleziona il <strong>Pannello 4</strong></li>
-            <li><span class="key-combo">R1 + A</span>: Seleziona il <strong>Pannello 0</strong> (Pannello Originale/Stock)</li>
-        </ul>
-        <div class="note">
-            <p><strong>Cosa succede dopo:</strong></p>
-            <p>Una volta rilevata una combinazione valida, il sistema spegnerà il dispositivo. Sarà necessario riavviarlo normalmente e si accenderà con la configurazione del pannello selezionata. Lo schermo mostrerà un logo alla riaccensione per confermare la modifica.</p>
+        <section>
+            <h2>Combinazioni tasti utili</h2>
+            <div class="card section-card">
+                <div class="card-body">
+                    <ul class="key-combo-list">
+                        <li class="key-combo-item">
+                            <span class="key-combo-chip"><small>Hotkey</small> R3 + D-Pad Su</span>
+                            <span>Aumenta luminosità</span>
+                        </li>
+                        <li class="key-combo-item">
+                            <span class="key-combo-chip"><small>Retroarch</small> Fn + X</span>
+                            <span>Apri menu Retroarch</span>
+                        </li>
+                        <li class="key-combo-item">
+                            <span class="key-combo-chip"><small>Save</small> Fn + R1</span>
+                            <span>Salva partita</span>
+                        </li>
+                        <li class="key-combo-item">
+                            <span class="key-combo-chip"><small>Power</small> R3 + Power</span>
+                            <span>Spegnimento sicuro</span>
+                        </li>
+                        <li class="key-combo-item">
+                            <span class="key-combo-chip"><small>Load</small> Fn + L1</span>
+                            <span>Carica partita</span>
+                        </li>
+                        <li class="key-combo-item">
+                            <span class="key-combo-chip"><small>Pause</small> Fn + A</span>
+                            <span>Metti in pausa il gioco</span>
+                        </li>
+                        <li class="key-combo-item">
+                            <span class="key-combo-chip"><small>Reset</small> Fn + B</span>
+                            <span>Riavvia il gioco</span>
+                        </li>
+                        <li class="key-combo-item">
+                            <span class="key-combo-chip"><small>Exit</small> Fn + Start</span>
+                            <span>Esci dal gioco</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Modalità Selettore Pannello (Panel Picker Mode)</h2>
+            <div class="card section-card">
+                <div class="card-body">
+                    <p>
+                        Per entrare nella <strong>Modalità Selettore Pannello</strong>, tieni premuta la corretta
+                        combinazione di tasti durante l'avvio della console.
+                    </p>
+                    <p><strong>Tieni premuto l'Hotkey (<span class="key-combo-chip">R1</span>) + uno dei seguenti pulsanti durante l'accensione:</strong></p>
+
+                    <ul class="panel-list">
+                        <li class="panel-item">
+                            <span class="panel-label">Combinazione</span>
+                            <span class="key-combo-chip">R1 + SU</span>
+                            <span class="panel-label">Pannello</span>
+                            <span class="panel-name"><strong>Pannello 1</strong></span>
+                        </li>
+                        <li class="panel-item">
+                            <span class="panel-label">Combinazione</span>
+                            <span class="key-combo-chip">R1 + DESTRA</span>
+                            <span class="panel-label">Pannello</span>
+                            <span class="panel-name"><strong>Pannello 2</strong></span>
+                        </li>
+                        <li class="panel-item">
+                            <span class="panel-label">Combinazione</span>
+                            <span class="key-combo-chip">R1 + GIÙ</span>
+                            <span class="panel-label">Pannello</span>
+                            <span class="panel-name"><strong>Pannello 3</strong></span>
+                        </li>
+                        <li class="panel-item">
+                            <span class="panel-label">Combinazione</span>
+                            <span class="key-combo-chip">R1 + SINISTRA</span>
+                            <span class="panel-label">Pannello</span>
+                            <span class="panel-name"><strong>Pannello 4</strong></span>
+                        </li>
+                        <li class="panel-item">
+                            <span class="panel-label">Combinazione</span>
+                            <span class="key-combo-chip">R1 + A</span>
+                            <span class="panel-label">Pannello</span>
+                            <span class="panel-name"><strong>Pannello 0 (Originale/Stock)</strong></span>
+                        </li>
+                    </ul>
+
+                    <div class="note" style="margin-top: 14px;">
+                        <strong>Cosa succede dopo:</strong> una volta rilevata una combinazione valida, il sistema
+                        spegnerà il dispositivo. Sarà necessario riavviarlo normalmente: lo schermo mostrerà un logo
+                        alla riaccensione per confermare la modifica del pannello.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Raccolte ROM</h2>
+            <div class="card section-card">
+                <div class="card-body">
+                    <div class="rom-group">
+                        <h3>Spagnolo</h3>
+                        <div class="button-row">
+                            <a class="button" href="https://terabox.com/s/1scw9iwVpHL05OzG8JfkKVA" target="_blank">
+                                <span class="icon">🎮</span> Super Nintendo (398 giochi)
+                            </a>
+                            <a class="button" href="https://terabox.com/s/1DULwEcPXgX3w9KLajZu0Nw" target="_blank">
+                                <span class="icon">🎮</span> Nintendo (815 giochi)
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="rom-group">
+                        <h3>Inglese</h3>
+                        <div class="button-row">
+                            <a class="button" href="https://terabox.com/s/1OZVpdGRaY7ii4sAEkMA9GA" target="_blank">
+                                <span class="icon">🎮</span> Gameboy Advance (1047 giochi)
+                            </a>
+                            <a class="button" href="https://terabox.com/s/1GJQrGQO-a2zVfp0S2ZW8Gw" target="_blank">
+                                <span class="icon">🎮</span> Sega Genesis (799 giochi)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Link utili</h2>
+            <div class="card section-card">
+                <div class="card-body">
+                    <h3>Strumenti</h3>
+                    <div class="button-row">
+                        <a class="button" href="https://terabox.com/s/1vcyWr6XegoJIuCjlIMtoUA" target="_blank">
+                            <span class="icon">🗜️</span> CHDMAN
+                        </a>
+                        <a class="button" href="https://terabox.com/s/1rlzmTUSJowDWJMwh861QZA" target="_blank">
+                            <span class="icon">🧩</span> Delta Patcher
+                        </a>
+                    </div>
+
+                    <h3 style="margin-top: 14px;">Set ROM</h3>
+                    <div class="button-row">
+                        <a class="button" href="https://archive.org/download/chd_psx_eur/CHD-PSX-EUR/" target="_blank">
+                            <span class="icon">🕹️</span> PSX Europeo
+                        </a>
+                        <a class="button" href="https://archive.org/download/rr-sony-playstation-portable/europe/" target="_blank">
+                            <span class="icon">🕹️</span> PSP Europeo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer-space">
+            Guida a cura di <span>IKKI</span> · R36S + ArkOS · Aggiorna regolarmente firmware, BIOS e backup SD per non perdere mai i tuoi progressi.
         </div>
-    </div>
-    
-    <h2>Raccolte ROM</h2>
-    <div class="section">
-        <h3>Spagnolo</h3>
-        <p>
-            <a class="button" href="https://terabox.com/s/1scw9iwVpHL05OzG8JfkKVA" target="_blank">Super Nintendo (398 giochi)</a><br>
-            <a class="button" href="https://terabox.com/s/1DULwEcPXgX3w9KLajZu0Nw" target="_blank">Nintendo (815 giochi)</a>
-        </p>
-
-        <h3>Inglese</h3>
-        <p>
-            <a class="button" href="https://terabox.com/s/1OZVpdGRaY7ii4sAEkMA9GA" target="_blank">Gameboy Advance (1047 giochi)</a><br>
-            <a class="button" href="https://terabox.com/s/1GJQrGQO-a2zVfp0S2ZW8Gw" target="_blank">Sega Genesis (799 giochi)</a>
-        </p>
-    </div>
-
-    <h2>Link utili</h2>
-    <div class="section">
-        <h3>Strumenti</h3>
-        <p>
-            <a class="button" href="https://terabox.com/s/1vcyWr6XegoJIuCjlIMtoUA" target="_blank">CHDMAN</a>
-            <a class="button" href="https://terabox.com/s/1rlzmTUSJowDWJMwh861QZA" target="_blank">Delta Patcher</a>
-        </p>
-
-        <h3>Set ROM</h3>
-        <p>
-            <a class="button" href="https://archive.org/download/chd_psx_eur/CHD-PSX-EUR/" target="_blank">PSX Europeo</a>
-            <a class="button" href="https://archive.org/download/rr-sony-playstation-portable/europe/" target="_blank">PSP Europeo</a>
-        </p>
-    </div>
+    </main>
+</div>
 </body>
 </html>
