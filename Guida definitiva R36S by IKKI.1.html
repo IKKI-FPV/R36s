@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Guida Definitiva R36S</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #E63946;
+            text-align: center;
+            border-bottom: 3px solid #1D3557;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1D3557;
+            background: linear-gradient(90deg, #A8DADC 0%, rgba(168,218,220,0.2) 100%);
+            padding: 8px 15px;
+            border-left: 4px solid #457B9D;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #457B9D;
+            margin-top: 25px;
+        }
+        a {
+            color: #1D3557;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        a:hover {
+            color: #E63946;
+            text-decoration: underline;
+        }
+        .note {
+            background-color: #F1FAEE;
+            border-left: 4px solid #A8DADC;
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .warning {
+            background-color: #FFE5E5;
+            border-left: 4px solid #E63946;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        .section {
+            background: #F8F9FA;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .button {
+            display: inline-block;
+            background: #1D3557;
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin: 5px 0;
+            font-weight: normal;
+        }
+        .compatibility-list {
+            columns: 2;
+            column-gap: 30px;
+        }
+        .key-combo {
+            font-family: monospace;
+            background: #E9ECEF;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GUIDA DEFINITIVA PER LA CONSOLE R36S</h1>
+    
+    <div class="section">
+        <p><strong>Versione 1.20</strong></p>
+        <p>Dubbi, suggerimenti, domande o commenti: <a href="mailto:vickzneh@gmail.com">vickzneh@gmail.com</a></p>
+        <p>Documentazione, aggiornamenti, aggiunte, upload, traduzione e manutenzione a cura di <a href="https://www.youtube.com/@ElVickz" target="_blank">ElVickz</a></p>
+        
+        <div class="note">
+            <p><strong>Riferimenti:</strong></p>
+            <ul>
+                <li><a href="https://1drv.ms/b/s!AiGazFXK2fBDk5l5n_7EKV8BMcrauQ" target="_blank">Documentazione originale di Ivo Senden</a></li>
+                <li><a href="https://docs.google.com/spreadsheets/d/1gWxtr-GmwWop-_qGUq022RXxK2aTLpPg9Qra68TQLI8/edit#gid=0" target="_blank">Compatibilità SD e Wi-Fi</a></li>
+                <li><a href="https://github.com/manster-zz/R36S-LINKS/wiki" target="_blank">Wiki R36S (Manzter-zz)</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Introduzione</h2>
+    <p>Guida per utenti nuovi della console R36S e per chi desidera gestire la propria collezione di ROM. Copre configurazioni opzionali utili ma non obbligatorie.</p>
+
+    <h2>Glossario di termini comuni</h2>
+    <div class="section">
+        <p><strong>ROM</strong>: File dei giochi (es. Tetris, Mario)</p>
+        <p><strong>CORE</strong>: Nucleo dell'emulatore (usato in Retroarch)</p>
+        <p><strong>BIOS</strong>: Software necessario per avviare emulatori</p>
+        <p><strong>CFW (Custom Firmware)</strong>: Sistema operativo modificato (es. ArkOS)</p>
+        </div>
+
+    <h2>Specifiche tecniche</h2>
+    <div class="section">
+        <ul>
+            <li><strong>Display</strong>: 3.5" IPS (640×480)</li>
+            <li><strong>CPU</strong>: RK3326</li>
+            <li><strong>RAM</strong>: 1GB DDR3L</li>
+            <li><strong>Batteria</strong>: 3200mAh</li>
+        </ul>
+    </div>
+
+    <h2>Emulatori compatibili</h2>
+    <div class="compatibility-list">
+        <h3>✅ Funzionano correttamente</h3>
+        <ul>
+            <li>Arcade (MAME, FBANEO)</li>
+            <li>PlayStation 1</li>
+            <li>Nintendo 64</li>
+            <li>Gameboy Advance</li>
+            </ul>
+
+        <h3>⚠️ Funzionano parzialmente</h3>
+        <ul>
+            <li>Dreamcast</li>
+            <li>Super Nintendo</li>
+            <li>Sega Saturn</li>
+            </ul>
+    </div>
+
+    <h2>Primi passi</h2>
+    <div class="section">
+        <h3>Strumenti necessari</h3>
+        <p>
+            <a class="button" href="https://terabox.com/s/1r31fTGsotEM5jn0VEYysNA" target="_blank">Scarica ImageUSB</a><br>
+            <a class="button" href="https://terabox.com/s/1ndOyAlJSXTQBcG5X_bo79g" target="_blank">Scarica Win32 Disk Imager</a><br>
+            <a class="button" href="https://terabox.com/s/12HvykN81hpYodWk3ZGffsw" target="_blank">Scarica SD Formatter</a>
+        </p>
+
+        <h3>Identificazione schermo</h3>
+        <p>
+            <a class="button" href="https://youtu.be/tMr3JzayYoM" target="_blank">Guida video</a>
+            <a class="button" href="https://aeolusux.github.io/ArkOS-R3XS/tools/dtbIdentify.htm" target="_blank">Strumento online</a>
+        </p>
+
+        <h3>Aggiornamento sistema</h3>
+        <p>
+            <a class="button" href="https://www.mediafire.com/file/23cw6ij4bz474f3/ArkOS_R35S-R36S_v2.0_05242024_P4.img.xz/file" target="_blank">ArkOS 2.0 (05/2024)</a>
+            <a class="button" href="https://github.com/AeolusUX/R36S-DTB" target="_blank">File DTB</a>
+        </p>
+    </div>
+
+    <h2>File BIOS</h2>
+    <div class="section">
+        <p>
+            <a class="button" href="https://archive.org/download/retro-arcade-v-04-rg-35-m-p/additional_sets/bios.7z" target="_blank">RetroArch BIOS Pack</a>
+            <a class="button" href="https://terabox.com/s/1D-gCam0HldBSrbAuWDnhsg" target="_blank">Pack BIOS personale</a>
+        </p>
+    </div>
+
+    <h2>Combinazioni tasti utili</h2>
+    <div class="section">
+        <ul>
+            <li><span class="key-combo">R3 + D-Pad Su</span>: Aumenta luminosità</li>
+            <li><span class="key-combo">Fn + X</span>: Menu Retroarch</li>
+            <li><span class="key-combo">Fn + R1</span>: Salva partita</li>
+            <li><span class="key-combo">R3(tasto analogico sinistro) + Power</span>: Spegnimento sicuro</li>
+            <li><span class="key-combo">Fn + L1</span>: Carica partita</li>
+            <li><span class="key-combo">Fn + A</span>: Metti in pausa il gioco</li>
+            <li><span class="key-combo">Fn + B</span>: Riavvia il gioco</li>
+            <li><span class="key-combo">Fn + Start</span>: Esci dal gioco</li>
+        </ul>
+    </div>
+
+    <h2>Modalità Selettore Pannello (Panel Picker Mode)</h2>
+    <div class="section">
+        <p>Per entrare nella <strong>Modalità Selettore Pannello</strong>, tieni premuta la corretta combinazione di tasti durante l'avvio della console.</p>
+        <p><strong>Tieni premuto l'Hotkey (<span class="key-combo">R1</span>) + uno dei seguenti pulsanti durante l'accensione:</strong></p>
+        <ul>
+            <li><span class="key-combo">R1 + SU</span>: Seleziona il <strong>Pannello 1</strong></li>
+            <li><span class="key-combo">R1 + DESTRA</span>: Seleziona il <strong>Pannello 2</strong></li>
+            <li><span class="key-combo">R1 + GIÙ</span>: Seleziona il <strong>Pannello 3</strong></li>
+            <li><span class="key-combo">R1 + SINISTRA</span>: Seleziona il <strong>Pannello 4</strong></li>
+            <li><span class="key-combo">R1 + A</span>: Seleziona il <strong>Pannello 0</strong> (Pannello Originale/Stock)</li>
+        </ul>
+        <div class="note">
+            <p><strong>Cosa succede dopo:</strong></p>
+            <p>Una volta rilevata una combinazione valida, il sistema spegnerà il dispositivo. Sarà necessario riavviarlo normalmente e si accenderà con la configurazione del pannello selezionata. Lo schermo mostrerà un logo alla riaccensione per confermare la modifica.</p>
+        </div>
+    </div>
+    
+    <h2>Raccolte ROM</h2>
+    <div class="section">
+        <h3>Spagnolo</h3>
+        <p>
+            <a class="button" href="https://terabox.com/s/1scw9iwVpHL05OzG8JfkKVA" target="_blank">Super Nintendo (398 giochi)</a><br>
+            <a class="button" href="https://terabox.com/s/1DULwEcPXgX3w9KLajZu0Nw" target="_blank">Nintendo (815 giochi)</a>
+        </p>
+
+        <h3>Inglese</h3>
+        <p>
+            <a class="button" href="https://terabox.com/s/1OZVpdGRaY7ii4sAEkMA9GA" target="_blank">Gameboy Advance (1047 giochi)</a><br>
+            <a class="button" href="https://terabox.com/s/1GJQrGQO-a2zVfp0S2ZW8Gw" target="_blank">Sega Genesis (799 giochi)</a>
+        </p>
+    </div>
+
+    <h2>Link utili</h2>
+    <div class="section">
+        <h3>Strumenti</h3>
+        <p>
+            <a class="button" href="https://terabox.com/s/1vcyWr6XegoJIuCjlIMtoUA" target="_blank">CHDMAN</a>
+            <a class="button" href="https://terabox.com/s/1rlzmTUSJowDWJMwh861QZA" target="_blank">Delta Patcher</a>
+        </p>
+
+        <h3>Set ROM</h3>
+        <p>
+            <a class="button" href="https://archive.org/download/chd_psx_eur/CHD-PSX-EUR/" target="_blank">PSX Europeo</a>
+            <a class="button" href="https://archive.org/download/rr-sony-playstation-portable/europe/" target="_blank">PSP Europeo</a>
+        </p>
+    </div>
+</body>
+</html>
