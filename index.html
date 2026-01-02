@@ -105,7 +105,6 @@
             text-align: center;
             margin-bottom: 50px;
             position: relative;
-            /* Placeholder height to prevent layout shift when mascot moves */
             min-height: 150px; 
         }
 
@@ -125,14 +124,14 @@
             z-index: 999;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
             transition: top 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.5s;
-            cursor: pointer; /* Indica che è cliccabile */
+            cursor: pointer;
         }
         
         .sd-mascot:hover {
             transform: scale(1.1);
         }
 
-        /* Animazioni interne SVG (occhi, braccia, gambe) */
+        /* Animazioni interne SVG */
         .sd-mascot .leg-left { animation: leg-move 0.5s infinite alternate; }
         .sd-mascot .leg-right { animation: leg-move 0.5s infinite alternate-reverse; }
         .sd-mascot .arm-left { animation: arm-wave 1s infinite ease-in-out; transform-origin: top right;}
@@ -143,13 +142,26 @@
         @keyframes arm-wave { 0% { transform: rotate(0deg); } 50% { transform: rotate(30deg); } 100% { transform: rotate(0deg); } }
         @keyframes blink { 0%, 96%, 100% { transform: scaleY(1); } 98% { transform: scaleY(0.1); } }
         
-        /* Animazione "Ballo" quando è in giro */
+        /* Animazione "Ballo" standard */
         .dancing {
             animation: dance-bob 0.4s infinite alternate ease-in-out;
         }
         @keyframes dance-bob {
             from { transform: translateY(0) rotate(-5deg) scale(1.1); }
             to { transform: translateY(-15px) rotate(5deg) scale(1.1); }
+        }
+
+        /* Animazione "Crazy" */
+        .crazy {
+            animation: crazy-shake 0.1s infinite !important;
+            filter: drop-shadow(0 0 20px red) !important;
+        }
+        @keyframes crazy-shake {
+            0% { transform: translate(2px, 2px) rotate(0deg); }
+            25% { transform: translate(-2px, -4px) rotate(-20deg); }
+            50% { transform: translate(-4px, 0px) rotate(20deg); }
+            75% { transform: translate(4px, 4px) rotate(-10deg); }
+            100% { transform: translate(2px, -2px) rotate(10deg); }
         }
 
         .pill-badge {
@@ -193,7 +205,7 @@
             .full-width { grid-column: span 1; }
         }
 
-        /* --- Cards (Glassmorphism enhanced) --- */
+        /* --- Cards --- */
         .card {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -230,7 +242,6 @@
             gap: 12px;
         }
         
-        /* Applica il glow anche alle icone delle card se vuoi */
         .card-title-icon {
             background: rgba(99, 102, 241, 0.2);
             color: var(--accent);
@@ -248,7 +259,6 @@
         h5 { margin: 15px 0 8px 0; color: var(--accent); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;}
         p { margin: 0 0 15px 0; font-size: 0.95rem; color: var(--text-muted); }
 
-        /* --- Elementi Dettagliati --- */
         .detail-box {
             background: rgba(0,0,0,0.3);
             border-radius: 12px;
@@ -598,7 +608,6 @@
      * SCRIPT GESTIONE EFFETTI VISIVI
      * 1. Particelle + Scritte Background
      */
-
     const canvas = document.getElementById('particles-js');
     const ctx = canvas.getContext('2d');
     
@@ -613,9 +622,7 @@
     resize();
 
     class Particle {
-        constructor() {
-            this.reset();
-        }
+        constructor() { this.reset(); }
         reset() {
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
@@ -638,122 +645,155 @@
         }
     }
 
-    // Inizializza particelle
     for (let i = 0; i < 50; i++) particles.push(new Particle());
 
     function animateCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // 1. Disegna scritte "background"
         ctx.font = "bold 40px Outfit";
         ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
         ctx.textAlign = "center";
-        // Disegna la scritta ripetuta in griglia
         for(let x=0; x<canvas.width; x+=400) {
             for(let y=0; y<canvas.height; y+=300) {
                 ctx.fillText(textToDraw, x + 100, y + 100);
             }
         }
 
-        // 2. Disegna particelle
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
+        particles.forEach(p => { p.update(); p.draw(); });
         requestAnimationFrame(animateCanvas);
     }
     animateCanvas();
 
 
     /**
-     * LOGICA MASCOTTE: Interattiva
-     * - Parte in movimento
-     * - Insegue il mouse ogni 2 movimenti
-     * - Click per fermarla (freeze) / riavviarla
+     * LOGICA MASCOTTE: Crazy Mode
+     * 1. Start: Roaming
+     * 2. Click 1: Crazy (3s) -> Roaming
+     * 3. Click 2: Home
+     * 4. Click 3: Roaming (reset)
      */
     const mascot = document.getElementById('mascot');
     const homeMarker = document.getElementById('mascot-home-marker');
     
-    // Stato
-    let isFrozen = false; // Inizia in movimento
+    let state = 'ROAMING'; // Stati: ROAMING, CRAZY, HOME
+    let crazyTimer = null;
     let moveTimer = null;
     let moveCounter = 0;
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
+    let hasBeenCrazyOnce = false; // Flag per gestire il secondo click
 
-    // Tracciamento Mouse
     document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
     });
 
-    // Click per Bloccare/Sbloccare
     mascot.addEventListener('click', () => {
-        if (isFrozen) {
-            // Sblocca
-            isFrozen = false;
-            mascot.classList.add('dancing');
-            nextMove(); // Riparte subito
-        } else {
-            // Blocca
-            isFrozen = true;
-            clearTimeout(moveTimer); // Ferma i movimenti futuri
-            moveMascotToHome(); // Torna a casa
+        if (state === 'HOME') {
+            // TERZO CLICK (o successivo): Riparti a vagare
+            startRoaming();
+            hasBeenCrazyOnce = false; 
+        } else if (state === 'ROAMING') {
+            if (!hasBeenCrazyOnce) {
+                // PRIMO CLICK: Impazzisci
+                startCrazyMode();
+                hasBeenCrazyOnce = true;
+            } else {
+                // SECONDO CLICK: Vai a casa
+                goHome();
+            }
         }
+        // Se è in CRAZY mode, ignora i click (o potresti volerlo fermare subito, ma meglio lasciarlo sfogare)
     });
 
-    function moveMascotToHome() {
+    function goHome() {
+        state = 'HOME';
+        clearTimeout(moveTimer);
+        clearTimeout(crazyTimer);
+        mascot.classList.remove('dancing');
+        mascot.classList.remove('crazy');
+        
         const rect = homeMarker.getBoundingClientRect();
-        // Calcolo posizione fixed relativa alla finestra
+        // Spostamento fluido verso casa (CSS transition gestisce l'animazione)
         mascot.style.top = rect.top + 'px'; 
         mascot.style.left = (rect.left + (rect.width - 90)/2) + 'px';
+        mascot.style.transform = "rotate(0deg)";
+    }
+
+    function startRoaming() {
+        state = 'ROAMING';
+        mascot.classList.remove('crazy');
+        mascot.classList.add('dancing');
+        nextMove();
+    }
+
+    function startCrazyMode() {
+        state = 'CRAZY';
+        clearTimeout(moveTimer); // Ferma il movimento normale
         mascot.classList.remove('dancing');
+        mascot.classList.add('crazy');
+        
+        // Movimenti frenetici per 3 secondi
+        let crazyMoves = 0;
+        const interval = setInterval(() => {
+            crazyMoves++;
+            if (crazyMoves > 15) { // Circa 3 secondi (15 * 200ms)
+                clearInterval(interval);
+                // Finita la pazzia, torna a vagare
+                startRoaming();
+            } else {
+                moveRandomFast();
+            }
+        }, 200);
+    }
+
+    function moveRandomFast() {
+        const w = window.innerWidth - 100;
+        const h = window.innerHeight - 150;
+        const randomX = Math.random() * w;
+        const randomY = Math.random() * h + 50;
+        mascot.style.top = randomY + 'px';
+        mascot.style.left = randomX + 'px';
     }
 
     function moveMascotTo(x, y) {
-        // Limiti per non uscire troppo dallo schermo
         const maxX = window.innerWidth - 100;
         const maxY = window.innerHeight - 120;
-        
         let targetX = Math.max(10, Math.min(x, maxX));
         let targetY = Math.max(50, Math.min(y, maxY));
 
         mascot.style.top = targetY + 'px';
         mascot.style.left = targetX + 'px';
-        mascot.classList.add('dancing');
     }
 
     function nextMove() {
-        if (isFrozen) return;
+        if (state !== 'ROAMING') return;
 
         moveCounter++;
-        
-        // Logica: Ogni 3° movimento (dopo 2 random), vai verso il mouse
+        // Ogni 3 movimenti, insegui il mouse
         if (moveCounter % 3 === 0) {
-            // Cerca il mouse (con un offset per centrare l'omino)
             moveMascotTo(mouseX - 45, mouseY - 60);
         } else {
-            // Movimento Random
             const w = window.innerWidth - 100;
             const h = window.innerHeight - 150;
             const randomX = Math.random() * w;
             const randomY = Math.random() * h + 50;
             moveMascotTo(randomX, randomY);
         }
-
-        // Pianifica il prossimo movimento tra 2.5 secondi
         moveTimer = setTimeout(nextMove, 2500); 
     }
 
-    // Avvio iniziale
+    // Avvio
     window.onload = () => {
-        isFrozen = false;
-        nextMove(); // Inizia a muoversi subito
+        startRoaming();
     };
 
-    // Aggiorna posizione casa se la finestra viene ridimensionata (solo se bloccato)
     window.addEventListener('resize', () => {
-        if(isFrozen) moveMascotToHome();
+        if(state === 'HOME') {
+            const rect = homeMarker.getBoundingClientRect();
+            mascot.style.top = rect.top + 'px'; 
+            mascot.style.left = (rect.left + (rect.width - 90)/2) + 'px';
+        }
     });
 
 </script>
