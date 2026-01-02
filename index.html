@@ -2,21 +2,21 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Guida Definitiva R36S - ArkOS Edition (Estesa)</title>
+    <title>Guida Definitiva R36S - ArkOS Edition (Arcade Mode)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --bg-card-hover: #26334a;
+            --bg-body: #050a14;
+            --bg-card: rgba(30, 41, 59, 0.85); /* Più trasparenza per vedere gli effetti */
+            --bg-card-hover: rgba(38, 51, 74, 0.95);
             --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.4);
+            --accent-glow: rgba(99, 102, 241, 0.6);
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
             --success: #10b981;
@@ -34,23 +34,62 @@
             padding: 0;
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-body);
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25%), 
-                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.05), transparent 25%);
             color: var(--text-main);
             min-height: 100vh;
-            padding-bottom: 60px;
+            padding-bottom: 100px; /* Spazio extra per il pavimento 3D */
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
+        /* --- Canvas Sfondo (Particelle + Testo) --- */
         #particles-js {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: -2;
             pointer-events: none;
+        }
+
+        /* --- Pavimento 3D (Retro Grid) --- */
+        .retro-floor {
+            position: fixed;
+            bottom: -50px;
+            left: -50%;
+            width: 200%;
+            height: 40vh;
+            background: 
+                linear-gradient(transparent 0%, var(--bg-body) 80%),
+                repeating-linear-gradient(90deg, rgba(99,102,241,0.3) 0px, rgba(99,102,241,0.3) 2px, transparent 2px, transparent 80px),
+                repeating-linear-gradient(0deg, rgba(99,102,241,0.3) 0px, rgba(99,102,241,0.3) 2px, transparent 2px, transparent 80px);
+            transform: perspective(300px) rotateX(60deg);
+            z-index: -1;
+            animation: moveGrid 4s linear infinite;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: perspective(300px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(300px) rotateX(60deg) translateY(80px); }
+        }
+
+        /* --- Effetto GLOW Multicolore sui Titoli --- */
+        .glow-text {
+            animation: rgbGlow 6s linear infinite;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+            font-weight: 900;
+        }
+        
+        @keyframes rgbGlow {
+            0% { background-position: 0%; text-shadow: 0 0 10px rgba(255,0,0,0.5); }
+            50% { background-position: 100%; text-shadow: 0 0 10px rgba(0,0,255,0.5); }
+            100% { background-position: 0%; text-shadow: 0 0 10px rgba(255,0,0,0.5); }
         }
 
         .container {
@@ -66,33 +105,47 @@
             text-align: center;
             margin-bottom: 50px;
             position: relative;
+            /* Placeholder height to prevent layout shift when mascot moves */
+            min-height: 150px; 
         }
 
-        .mascot-container {
+        /* Contenitore "Casa" della mascotte */
+        .mascot-home {
+            width: 100px;
             height: 120px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            margin-bottom: 15px;
+            margin: 0 auto 15px;
+            position: relative;
         }
 
+        /* La Mascotte stessa */
         .sd-mascot {
             width: 90px;
             height: auto;
-            animation: bounce 3s infinite ease-in-out;
-            transform-origin: bottom center;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+            position: fixed; /* Per muoversi liberamente */
+            z-index: 999;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
+            transition: top 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.5s;
         }
-        .sd-mascot .leg-left { animation: leg-move 1s infinite alternate; }
-        .sd-mascot .leg-right { animation: leg-move 1s infinite alternate-reverse; }
-        .sd-mascot .arm-left { animation: arm-wave 2s infinite ease-in-out; transform-origin: top right;}
-        .sd-mascot .arm-right { animation: arm-wave 2s infinite ease-in-out reverse; transform-origin: top left;}
-        .sd-mascot .eye { animation: blink 4s infinite; transform-origin: center; }
 
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        /* Animazioni interne SVG (occhi, braccia, gambe) */
+        .sd-mascot .leg-left { animation: leg-move 0.5s infinite alternate; }
+        .sd-mascot .leg-right { animation: leg-move 0.5s infinite alternate-reverse; }
+        .sd-mascot .arm-left { animation: arm-wave 1s infinite ease-in-out; transform-origin: top right;}
+        .sd-mascot .arm-right { animation: arm-wave 1s infinite ease-in-out reverse; transform-origin: top left;}
+        .sd-mascot .eye { animation: blink 3s infinite; transform-origin: center; }
+
         @keyframes leg-move { from { transform: translateY(0); } to { transform: translateY(-4px); } }
-        @keyframes arm-wave { 0% { transform: rotate(0deg); } 50% { transform: rotate(15deg); } 100% { transform: rotate(0deg); } }
+        @keyframes arm-wave { 0% { transform: rotate(0deg); } 50% { transform: rotate(30deg); } 100% { transform: rotate(0deg); } }
         @keyframes blink { 0%, 96%, 100% { transform: scaleY(1); } 98% { transform: scaleY(0.1); } }
+        
+        /* Animazione "Ballo" quando è in giro */
+        .dancing {
+            animation: dance-bob 0.4s infinite alternate ease-in-out;
+        }
+        @keyframes dance-bob {
+            from { transform: translateY(0) rotate(-5deg) scale(1.1); }
+            to { transform: translateY(-15px) rotate(5deg) scale(1.1); }
+        }
 
         .pill-badge {
             background: rgba(99, 102, 241, 0.15);
@@ -104,16 +157,14 @@
             display: inline-block;
             margin-bottom: 20px;
             border: 1px solid rgba(99, 102, 241, 0.3);
+            backdrop-filter: blur(5px);
         }
 
         h1 {
-            font-size: 2.8rem;
+            font-size: 3.5rem;
             margin: 0 0 15px 0;
-            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
             letter-spacing: -1px;
+            text-transform: uppercase;
         }
 
         .subtitle {
@@ -131,28 +182,30 @@
             gap: 25px;
             margin-bottom: 30px;
         }
-        
         .full-width { grid-column: span 2; }
-
         @media (max-width: 850px) {
             .grid-layout { grid-template-columns: 1fr; }
             .full-width { grid-column: span 1; }
         }
 
-        /* --- Cards --- */
+        /* --- Cards (Glassmorphism enhanced) --- */
         .card {
             background: var(--bg-card);
             border-radius: var(--radius);
             padding: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: transform 0.2s ease;
-            margin-bottom: 0; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            transition: transform 0.3s ease, border-color 0.3s;
+            margin-bottom: 0;
+            position: relative;
+            overflow: hidden;
         }
 
         .card:hover {
-            border-color: rgba(99, 102, 241, 0.3);
-            background: var(--bg-card-hover);
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.2);
         }
 
         .card-header {
@@ -164,7 +217,7 @@
         }
 
         .card-title {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: #fff;
             display: flex;
@@ -172,16 +225,18 @@
             gap: 12px;
         }
         
+        /* Applica il glow anche alle icone delle card se vuoi */
         .card-title-icon {
             background: rgba(99, 102, 241, 0.2);
             color: var(--accent);
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
-            font-size: 1.2rem;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
         }
 
         h4 { margin: 25px 0 10px 0; color: #fff; font-size: 1.1rem; }
@@ -190,19 +245,13 @@
 
         /* --- Elementi Dettagliati --- */
         .detail-box {
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.3);
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 15px;
             border-left: 3px solid var(--accent);
         }
-        
-        .detail-title {
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 5px;
-            display: block;
-        }
+        .detail-title { font-weight: bold; color: #fff; margin-bottom: 5px; display: block; }
 
         .btn {
             display: inline-flex;
@@ -224,26 +273,25 @@
             background: var(--accent);
             color: #fff;
             border-color: var(--accent);
-            transform: translateY(-2px);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-        .btn.primary:hover { background: #4f46e5; }
+        .btn.primary:hover { background: #4f46e5; box-shadow: 0 0 30px var(--accent); }
         
         .btn-group { display: flex; flex-wrap: wrap; gap: 10px; }
 
-        /* --- Glossario & Specs --- */
         .glossary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
         .glossary-item strong { color: var(--accent); display: block; margin-bottom: 4px; }
-        .glossary-item { font-size: 0.9rem; color: var(--text-muted); background: rgba(0,0,0,0.15); padding: 12px; border-radius: 8px; }
+        .glossary-item { font-size: 0.9rem; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; }
 
-        /* --- Warning Box --- */
         .warning-box {
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.15);
             border: 1px solid rgba(239, 68, 68, 0.4);
             color: #fca5a5;
             padding: 20px;
@@ -252,10 +300,10 @@
             display: flex;
             gap: 15px;
             align-items: start;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
         }
         .warning-icon { font-size: 1.5rem; }
 
-        /* --- Keys --- */
         .key {
             background: #0f172a;
             border: 1px solid #475569;
@@ -268,19 +316,21 @@
             color: #fff;
             display: inline-block;
             margin: 0 2px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        /* --- Footer --- */
         .footer {
             text-align: center;
             margin-top: 60px;
             color: var(--text-muted);
             border-top: 1px solid rgba(255,255,255,0.05);
             padding-top: 30px;
+            position: relative;
+            z-index: 2;
         }
         
         a { color: var(--accent); text-decoration: none; transition: 0.2s;}
-        a:hover { color: #a5b4fc; text-decoration: underline; }
+        a:hover { color: #fff; text-shadow: 0 0 10px var(--accent); text-decoration: underline; }
 
         .panel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
         .panel-item { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9rem; }
@@ -289,37 +339,42 @@
 </head>
 <body>
 
+<!-- Canvas Sfondo -->
 <canvas id="particles-js"></canvas>
+
+<!-- Pavimento 3D -->
+<div class="retro-floor"></div>
 
 <div class="container">
 
     <header class="header-section">
         <div class="pill-badge">Aggiornato: Gennaio 2026 · Guida Completa</div>
         
-        <div class="mascot-container">
-            <!-- Mascotte SVG Animata -->
-            <svg class="sd-mascot" viewBox="0 0 100 120">
-                <rect class="leg-left" x="30" y="90" width="10" height="25" rx="5" fill="#334155" />
-                <rect class="leg-right" x="60" y="90" width="10" height="25" rx="5" fill="#334155" />
-                <path d="M20 10 L70 10 L80 25 L80 95 L20 95 Z" fill="#6366f1" stroke="#4338ca" stroke-width="2"/>
-                <g fill="#fbbf24">
-                    <rect x="28" y="95" width="6" height="8" /><rect x="38" y="95" width="6" height="8" />
-                    <rect x="48" y="95" width="6" height="8" /><rect x="58" y="95" width="6" height="8" />
-                    <rect x="68" y="95" width="6" height="8" />
-                </g>
-                <rect x="25" y="30" width="50" height="40" rx="3" fill="#f8fafc" opacity="0.9"/>
-                <text x="50" y="55" font-family="Arial" font-size="10" font-weight="bold" fill="#334155" text-anchor="middle">R36S</text>
-                <circle class="eye" cx="40" cy="45" r="2.5" fill="#1e293b"/>
-                <circle class="eye" cx="60" cy="45" r="2.5" fill="#1e293b"/>
-                <path d="M45 52 Q50 56 55 52" stroke="#1e293b" stroke-width="2" fill="none"/>
-                <path class="arm-left" d="M20 50 Q10 40 10 20" stroke="#334155" stroke-width="4" fill="none" stroke-linecap="round"/>
-                <path class="arm-right" d="M80 50 Q90 40 90 20" stroke="#334155" stroke-width="4" fill="none" stroke-linecap="round"/>
-            </svg>
-        </div>
+        <!-- Placeholder invisibile per la "Home" della mascotte -->
+        <div class="mascot-home" id="mascot-home-marker"></div>
 
-        <h1>Guida Definitiva R36S</h1>
+        <!-- Mascotte SVG Animata (Position Fixed tramite JS) -->
+        <svg class="sd-mascot" id="mascot" viewBox="0 0 100 120">
+            <rect class="leg-left" x="30" y="90" width="10" height="25" rx="5" fill="#334155" />
+            <rect class="leg-right" x="60" y="90" width="10" height="25" rx="5" fill="#334155" />
+            <path d="M20 10 L70 10 L80 25 L80 95 L20 95 Z" fill="#6366f1" stroke="#4338ca" stroke-width="2"/>
+            <g fill="#fbbf24">
+                <rect x="28" y="95" width="6" height="8" /><rect x="38" y="95" width="6" height="8" />
+                <rect x="48" y="95" width="6" height="8" /><rect x="58" y="95" width="6" height="8" />
+                <rect x="68" y="95" width="6" height="8" />
+            </g>
+            <rect x="25" y="30" width="50" height="40" rx="3" fill="#f8fafc" opacity="0.9"/>
+            <text x="50" y="55" font-family="Arial" font-size="10" font-weight="bold" fill="#334155" text-anchor="middle">R36S</text>
+            <circle class="eye" cx="40" cy="45" r="2.5" fill="#1e293b"/>
+            <circle class="eye" cx="60" cy="45" r="2.5" fill="#1e293b"/>
+            <path d="M45 52 Q50 56 55 52" stroke="#1e293b" stroke-width="2" fill="none"/>
+            <path class="arm-left" d="M20 50 Q10 40 10 20" stroke="#334155" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path class="arm-right" d="M80 50 Q90 40 90 20" stroke="#334155" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>
+
+        <h1 class="glow-text">GUIDA DEFINITIVA R36S</h1>
         <p class="subtitle">
-            Manuale approfondito per principianti. Scopri come configurare ArkOS, risolvere lo schermo nero e gestire i tuoi giochi.
+            Manuale approfondito per principianti. Configurazione, ArkOS, Schermo Nero e Gestione Giochi.
         </p>
     </header>
 
@@ -330,7 +385,7 @@
             <!-- Intro & Glossario -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title"><span class="card-title-icon">📚</span> Concetti Base e Glossario</span>
+                    <span class="card-title glow-text"><span class="card-title-icon">📚</span> Concetti Base e Glossario</span>
                 </div>
                 <p>Prima di iniziare a modificare la tua console, è fondamentale capire i termini tecnici che useremo. La R36S è un piccolo computer Linux; trattala con cura!</p>
                 
@@ -357,7 +412,7 @@
             <!-- Setup Software -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title"><span class="card-title-icon">🛠️</span> 1. Scarica i Software Necessari</span>
+                    <span class="card-title glow-text"><span class="card-title-icon">🛠️</span> 1. Scarica i Software Necessari</span>
                 </div>
                 <p>Per lavorare sulla scheda SD della console, hai bisogno di questi programmi gratuiti sul tuo PC Windows.</p>
                 
@@ -384,7 +439,7 @@
             <!-- Aggiornamento & Problemi Schermo -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title"><span class="card-title-icon">🖥️</span> 2. Aggiornamento & Schermo Nero</span>
+                    <span class="card-title glow-text"><span class="card-title-icon">🖥️</span> 2. Aggiornamento & Schermo Nero</span>
                 </div>
                 
                 <div class="warning-box">
@@ -420,7 +475,7 @@
             <!-- Emulatori e Performance -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title"><span class="card-title-icon">🎮</span> 3. Emulatori: Cosa aspettarsi</span>
+                    <span class="card-title glow-text"><span class="card-title-icon">🎮</span> 3. Emulatori: Cosa aspettarsi</span>
                 </div>
                 <p>La R36S è potente, ma non onnipotente. Ecco la realtà sulle prestazioni.</p>
                 
@@ -454,7 +509,7 @@
             <!-- Contatti -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">ℹ️ Supporto Rapido</span>
+                    <span class="card-title glow-text">ℹ️ Supporto Rapido</span>
                 </div>
                 <p>Dubbi? Entra nella community o scrivi al manutentore.</p>
                 <div class="btn-group" style="flex-direction: column; width: 100%;">
@@ -467,7 +522,7 @@
             <!-- Hotkeys -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">⌨️ Comandi Segreti</span>
+                    <span class="card-title glow-text">⌨️ Comandi Segreti</span>
                 </div>
                 <p>Queste combinazioni ti salvano la vita mentre giochi. Il tasto <span class="key">FN</span> è spesso il tasto "Select" o un tasto funzione dedicato.</p>
                 
@@ -496,7 +551,7 @@
             <!-- Utility Tools -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">🧰 Utility Avanzate</span>
+                    <span class="card-title glow-text">🧰 Utility Avanzate</span>
                 </div>
                 
                 <div style="margin-bottom: 15px;">
@@ -515,7 +570,7 @@
              <!-- Rom Packs -->
              <div class="card">
                 <div class="card-header">
-                    <span class="card-title">💾 Archivio Giochi</span>
+                    <span class="card-title glow-text">💾 Archivio Giochi</span>
                 </div>
                 <p>Raccolte pronte all'uso. Scarica e copia nella cartella corrispondente della SD.</p>
                 <a href="https://terabox.com/s/1OZVpdGRaY7ii4sAEkMA9GA" target="_blank" class="btn full-width" style="margin-bottom:8px;">GBA Collection (1000+)</a>
@@ -527,18 +582,24 @@
     </div>
 
     <footer class="footer">
-        <p>R36S Ultimate Guide v1.50 · Curated by <strong>IKKI</strong></p>
+        <p>R36S Ultimate Guide v1.60 · Curated by <strong>IKKI</strong></p>
         <p><em>Ricorda:</em> Non rimuovere mai la SD mentre la console è accesa. Usa sempre "Shutdown" dal menu o <span class="key">FN</span> + <span class="key">POWER</span>.</p>
     </footer>
 
 </div>
 
 <script>
-    /* Effetto Particelle Sfondo */
+    /**
+     * SCRIPT GESTIONE EFFETTI VISIVI
+     * 1. Particelle + Scritte Background
+     * 2. Logica Mascotte Ballerina (Roaming + Homing)
+     */
+
     const canvas = document.getElementById('particles-js');
     const ctx = canvas.getContext('2d');
     
     let particles = [];
+    const textToDraw = "R36S Guida by IKKI";
     
     function resize() {
         canvas.width = window.innerWidth;
@@ -549,19 +610,21 @@
 
     class Particle {
         constructor() {
+            this.reset();
+        }
+        reset() {
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
-            this.vx = (Math.random() - 0.5) * 0.3;
-            this.vy = (Math.random() - 0.5) * 0.3;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
             this.size = Math.random() * 2 + 1;
             this.color = Math.random() > 0.5 ? 'rgba(99, 102, 241,' : 'rgba(16, 185, 129,'; 
-            this.alpha = Math.random() * 0.2;
+            this.alpha = Math.random() * 0.3;
         }
         update() {
             this.x += this.vx;
             this.y += this.vy;
-            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
         }
         draw() {
             ctx.fillStyle = this.color + this.alpha + ')';
@@ -571,18 +634,98 @@
         }
     }
 
-    // Creo particelle
-    for (let i = 0; i < 40; i++) particles.push(new Particle());
+    // Inizializza particelle
+    for (let i = 0; i < 50; i++) particles.push(new Particle());
 
-    function animate() {
+    function animateCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // 1. Disegna scritte "background"
+        ctx.font = "bold 40px Outfit";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
+        ctx.textAlign = "center";
+        // Disegna la scritta ripetuta in griglia
+        for(let x=0; x<canvas.width; x+=400) {
+            for(let y=0; y<canvas.height; y+=300) {
+                ctx.fillText(textToDraw, x + 100, y + 100);
+            }
+        }
+
+        // 2. Disegna particelle
         particles.forEach(p => {
             p.update();
             p.draw();
         });
-        requestAnimationFrame(animate);
+        requestAnimationFrame(animateCanvas);
     }
-    animate();
+    animateCanvas();
+
+
+    /**
+     * LOGICA MASCOTTE: Roam & Home
+     */
+    const mascot = document.getElementById('mascot');
+    const homeMarker = document.getElementById('mascot-home-marker');
+    let isHome = true;
+
+    function moveMascotToHome() {
+        const rect = homeMarker.getBoundingClientRect();
+        // Centra la mascotte nel marker
+        // Nota: la mascotte è fixed, quindi usiamo clientX/Y
+        // Il marker è nel flusso, getBoundingClientRect restituisce coordinate relative alla viewport
+        mascot.style.top = (rect.top + window.scrollY - window.scrollY) + 'px'; // + scrollY se fosse absolute, ma è fixed
+        mascot.style.left = (rect.left + (rect.width - 90)/2) + 'px'; // centra orizzontalmente
+        
+        mascot.classList.remove('dancing');
+        isHome = true;
+    }
+
+    function moveMascotRandom() {
+        const w = window.innerWidth - 100;
+        const h = window.innerHeight - 150;
+        
+        const randomX = Math.random() * w;
+        const randomY = Math.random() * h + 50; // evita di finire troppo in alto coprendo l'header
+
+        mascot.style.top = randomY + 'px';
+        mascot.style.left = randomX + 'px';
+        
+        mascot.classList.add('dancing');
+        isHome = false;
+    }
+
+    // Loop logico: 10s roam, 3s home
+    function mascotLoop() {
+        if(isHome) {
+            // È a casa, ora deve andare a spasso per 10 secondi
+            // Facciamo 3-4 movimenti random in questi 10 secondi
+            moveMascotRandom();
+            let moves = 0;
+            const wanderInterval = setInterval(() => {
+                moveMascotRandom();
+                moves++;
+                if(moves >= 3) { // Dopo 3 movimenti (circa 9-10 sec), torna a casa
+                    clearInterval(wanderInterval);
+                    moveMascotToHome();
+                    // Rimani a casa per 3 secondi, poi riparti
+                    setTimeout(mascotLoop, 3000);
+                }
+            }, 2500); // Cambia posizione ogni 2.5s
+        }
+    }
+
+    // Inizia il loop
+    // Posiziona inizialmente a casa
+    window.onload = () => {
+        moveMascotToHome();
+        setTimeout(mascotLoop, 1000); // Aspetta un secondo e parti
+    };
+
+    // Aggiorna posizione casa se si ridimensiona
+    window.addEventListener('resize', () => {
+        if(isHome) moveMascotToHome();
+    });
+
 </script>
 
 </body>
