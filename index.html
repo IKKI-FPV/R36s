@@ -125,6 +125,11 @@
             z-index: 999;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
             transition: top 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.5s;
+            cursor: pointer; /* Indica che è cliccabile */
+        }
+        
+        .sd-mascot:hover {
+            transform: scale(1.1);
         }
 
         /* Animazioni interne SVG (occhi, braccia, gambe) */
@@ -592,7 +597,6 @@
     /**
      * SCRIPT GESTIONE EFFETTI VISIVI
      * 1. Particelle + Scritte Background
-     * 2. Logica Mascotte Ballerina (Roaming + Homing)
      */
 
     const canvas = document.getElementById('particles-js');
@@ -662,68 +666,94 @@
 
 
     /**
-     * LOGICA MASCOTTE: Roam & Home
+     * LOGICA MASCOTTE: Interattiva
+     * - Parte in movimento
+     * - Insegue il mouse ogni 2 movimenti
+     * - Click per fermarla (freeze) / riavviarla
      */
     const mascot = document.getElementById('mascot');
     const homeMarker = document.getElementById('mascot-home-marker');
-    let isHome = true;
+    
+    // Stato
+    let isFrozen = false; // Inizia in movimento
+    let moveTimer = null;
+    let moveCounter = 0;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    // Tracciamento Mouse
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    // Click per Bloccare/Sbloccare
+    mascot.addEventListener('click', () => {
+        if (isFrozen) {
+            // Sblocca
+            isFrozen = false;
+            mascot.classList.add('dancing');
+            nextMove(); // Riparte subito
+        } else {
+            // Blocca
+            isFrozen = true;
+            clearTimeout(moveTimer); // Ferma i movimenti futuri
+            moveMascotToHome(); // Torna a casa
+        }
+    });
 
     function moveMascotToHome() {
         const rect = homeMarker.getBoundingClientRect();
-        // Centra la mascotte nel marker
-        // Nota: la mascotte è fixed, quindi usiamo clientX/Y
-        // Il marker è nel flusso, getBoundingClientRect restituisce coordinate relative alla viewport
-        mascot.style.top = (rect.top + window.scrollY - window.scrollY) + 'px'; // + scrollY se fosse absolute, ma è fixed
-        mascot.style.left = (rect.left + (rect.width - 90)/2) + 'px'; // centra orizzontalmente
-        
+        // Calcolo posizione fixed relativa alla finestra
+        mascot.style.top = rect.top + 'px'; 
+        mascot.style.left = (rect.left + (rect.width - 90)/2) + 'px';
         mascot.classList.remove('dancing');
-        isHome = true;
     }
 
-    function moveMascotRandom() {
-        const w = window.innerWidth - 100;
-        const h = window.innerHeight - 150;
+    function moveMascotTo(x, y) {
+        // Limiti per non uscire troppo dallo schermo
+        const maxX = window.innerWidth - 100;
+        const maxY = window.innerHeight - 120;
         
-        const randomX = Math.random() * w;
-        const randomY = Math.random() * h + 50; // evita di finire troppo in alto coprendo l'header
+        let targetX = Math.max(10, Math.min(x, maxX));
+        let targetY = Math.max(50, Math.min(y, maxY));
 
-        mascot.style.top = randomY + 'px';
-        mascot.style.left = randomX + 'px';
-        
+        mascot.style.top = targetY + 'px';
+        mascot.style.left = targetX + 'px';
         mascot.classList.add('dancing');
-        isHome = false;
     }
 
-    // Loop logico: 10s roam, 3s home
-    function mascotLoop() {
-        if(isHome) {
-            // È a casa, ora deve andare a spasso per 10 secondi
-            // Facciamo 3-4 movimenti random in questi 10 secondi
-            moveMascotRandom();
-            let moves = 0;
-            const wanderInterval = setInterval(() => {
-                moveMascotRandom();
-                moves++;
-                if(moves >= 3) { // Dopo 3 movimenti (circa 9-10 sec), torna a casa
-                    clearInterval(wanderInterval);
-                    moveMascotToHome();
-                    // Rimani a casa per 3 secondi, poi riparti
-                    setTimeout(mascotLoop, 3000);
-                }
-            }, 2500); // Cambia posizione ogni 2.5s
+    function nextMove() {
+        if (isFrozen) return;
+
+        moveCounter++;
+        
+        // Logica: Ogni 3° movimento (dopo 2 random), vai verso il mouse
+        if (moveCounter % 3 === 0) {
+            // Cerca il mouse (con un offset per centrare l'omino)
+            moveMascotTo(mouseX - 45, mouseY - 60);
+        } else {
+            // Movimento Random
+            const w = window.innerWidth - 100;
+            const h = window.innerHeight - 150;
+            const randomX = Math.random() * w;
+            const randomY = Math.random() * h + 50;
+            moveMascotTo(randomX, randomY);
         }
+
+        // Pianifica il prossimo movimento tra 2.5 secondi
+        moveTimer = setTimeout(nextMove, 2500); 
     }
 
-    // Inizia il loop
-    // Posiziona inizialmente a casa
+    // Avvio iniziale
     window.onload = () => {
-        moveMascotToHome();
-        setTimeout(mascotLoop, 1000); // Aspetta un secondo e parti
+        isFrozen = false;
+        nextMove(); // Inizia a muoversi subito
     };
 
-    // Aggiorna posizione casa se si ridimensiona
+    // Aggiorna posizione casa se la finestra viene ridimensionata (solo se bloccato)
     window.addEventListener('resize', () => {
-        if(isHome) moveMascotToHome();
+        if(isFrozen) moveMascotToHome();
     });
 
 </script>
